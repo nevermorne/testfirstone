@@ -4,6 +4,7 @@ local Players = game:GetService(\"Players\")
 local TeleportService = game:GetService(\"TeleportService\")
 local Camera = game:GetService(\"Workspace\").CurrentCamera
 local LocalPlayer = Players.LocalPlayer
+print('lets win')
 
 -- Tạo GUI chính
 local PhongDHP123 = Instance.new(\"ScreenGui\")
