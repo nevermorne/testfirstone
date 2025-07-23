@@ -1,0 +1,197 @@
+-- Script GUI Roblox Lua
+local UserInputService = game:GetService(\"UserInputService\")
+local Players = game:GetService(\"Players\")
+local TeleportService = game:GetService(\"TeleportService\")
+local Camera = game:GetService(\"Workspace\").CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+-- Tạo GUI chính
+local PhongDHP123 = Instance.new(\"ScreenGui\")
+PhongDHP123.Name = \"PhongDHP123\"
+PhongDHP123.Parent = LocalPlayer:WaitForChild(\"PlayerGui\")
+PhongDHP123.ResetOnSpawn = false
+
+-- Tạo Frame chính
+local Frame = Instance.new(\"Frame\")
+Frame.Size = UDim2.new(0, 200, 0, 370)
+Frame.Position = UDim2.new(0.5, -100, 0.5, -185)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.BorderSizePixel = 0
+Frame.Parent = PhongDHP123
+Frame.Active = true
+Frame.Draggable = true -- Cho phép kéo thả
+
+-- Tạo tiêu đề
+local Title = Instance.new(\"TextLabel\")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Title.Text = \"PhongDHP123 - Bring & View Parts\"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextScaled = true
+Title.Parent = Frame
+
+-- Hàm tạo nút Bring Part
+local function CreateBringButton(name, positionY, partName, parent)
+    local Button = Instance.new(\"TextButton\")
+    Button.Size = UDim2.new(0.9, 0, 0, 30)
+    Button.Position = UDim2.new(0.05, 0, 0, positionY)
+    Button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    Button.Text = \"Bring All \" .. name
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.TextScaled = true
+    Button.Parent = parent
+    Button.MouseButton1Click:Connect(function()
+        -- Kiểm tra nhân vật và HumanoidRootPart
+        if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild(\"HumanoidRootPart\") then
+            warn(\"Player's character or HumanoidRootPart not found!\")
+            return
+        end
+
+        -- Tìm thư mục Mine trong Workspace
+        local mine = game.Workspace:FindFirstChild(\"Mine\")
+        if not mine then
+            warn(\"Mine folder not found in Workspace!\")
+            return
+        end
+
+        -- Tìm tất cả các part có tên khớp với partName
+        local foundParts = false
+        for _, part in pairs(mine:GetChildren()) do
+            if part.Name == partName then
+                part.Anchored = false -- Bỏ anchored để di chuyển part
+                part.Position = LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 25, 10)
+                foundParts = true
+            end
+        end
+
+        -- Phản hồi kết quả
+        if foundParts then
+            print(\"Brought all \" .. partName .. \" to player!\")
+        else
+            warn(\"No parts named \" .. partName .. \" found in Workspace.Mine!\")
+        end
+    end)
+end
+
+-- Hàm tạo nút View Object
+local function CreateViewButton(name, positionY, partName, parent)
+    local Button = Instance.new(\"TextButton\")
+    Button.Size = UDim2.new(0.9, 0, 0, 30)
+    Button.Position = UDim2.new(0.05, 0, 0, positionY)
+    Button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    Button.Text = \"View \" .. name
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.TextScaled = true
+    Button.Parent = parent
+    Button.MouseButton1Click:Connect(function()
+        -- Tìm thư mục Mine trong Workspace
+        local mine = game.Workspace:FindFirstChild(\"Mine\")
+        if not mine then
+            warn(\"Mine folder not found in Workspace!\")
+            return
+        end
+
+        -- Tìm tất cả các part có tên khớp với partName
+        local parts = {}
+        for _, part in pairs(mine:GetChildren()) do
+            if part.Name == partName and part:IsA(\"BasePart\") then
+                table.insert(parts, part)
+            end
+        end
+
+        -- Chọn ngẫu nhiên một part để xem
+        if #parts > 0 then
+            local selectedPart = parts[math.random(1, #parts)]
+            Camera.CameraType = Enum.CameraType.Follow
+            Camera.CameraSubject = selectedPart
+            Camera.CFrame = CFrame.new(selectedPart.Position + Vector3.new(0, 5, 10), selectedPart.Position)
+            print(\"Viewing a \" .. partName .. \" in Workspace.Mine!\")
+        else
+            warn(\"No parts named \" .. partName .. \" found in Workspace.Mine!\")
+        end
+    end)
+end
+
+-- Tạo các nút cho Công thức 1
+local Formula1Label = Instance.new(\"TextLabel\")
+Formula1Label.Size = UDim2.new(0.9, 0, 0, 20)
+Formula1Label.Position = UDim2.new(0.05, 0, 0, 40)
+Formula1Label.BackgroundTransparency = 1
+Formula1Label.Text = \"Công thức 1\"
+Formula1Label.TextColor3 = Color3.fromRGB(255, 255, 0)
+Formula1Label.TextScaled = true
+Formula1Label.Parent = Frame
+
+CreateBringButton(\"Quartz\", 70, \"quartz\", Frame)
+
+-- Tạo các nút cho Công thức 2
+local Formula2Label = Instance.new(\"TextLabel\")
+Formula2Label.Size = UDim2.new(0.9, 0, 0, 20)
+Formula2Label.Position = UDim2.new(0.05, 0, 0, 100)
+Formula2Label.BackgroundTransparency = 1
+Formula2Label.Text = \"Công thức 2\"
+Formula2Label.TextColor3 = Color3.fromRGB(255, 255, 0)
+Formula2Label.TextScaled = true
+Formula2Label.Parent = Frame
+
+CreateBringButton(\"Garnet\", 130, \"garnet\", Frame)
+CreateBringButton(\"Diamond\", 160, \"diamond\", Frame)
+CreateBringButton(\"EDMium\", 190, \"edmium\", Frame)
+CreateBringButton(\"Hyperstone\", 220, \"hyperstone\", Frame)
+CreateBringButton(\"Strontium\", 250, \"strontium\", Frame)
+
+-- Tạo nút Server Hop
+local ServerHopButton = Instance.new(\"TextButton\")
+ServerHopButton.Size = UDim2.new(0.9, 0, 0, 30)
+ServerHopButton.Position = UDim2.new(0.05, 0, 0, 280)
+ServerHopButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+ServerHopButton.Text = \"Server Hop (Tìm nguyên liệu)\"
+ServerHopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ServerHopButton.TextScaled = true
+ServerHopButton.Parent = Frame
+ServerHopButton.MouseButton1Click:Connect(function()
+    local success, result = pcall(function()
+        local servers = game:GetService(\"HttpService\"):JSONDecode(game:HttpGet(\"https://games.roblox.com/v1/games/\" .. game.PlaceId .. \"/servers/Public?sortOrder=Asc&limit=100\"))
+        for _, server in pairs(servers.data) do
+            if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, LocalPlayer)
+                break
+            end
+        end
+    end)
+    if not success then
+        warn(\"Failed to server hop: \" .. result)
+    end
+end)
+
+-- Tạo nút Trở lại View Người chơi
+local ResetViewButton = Instance.new(\"TextButton\")
+ResetViewButton.Size = UDim2.new(0.9, 0, 0, 30)
+ResetViewButton.Position = UDim2.new(0.05, 0, 0, 310)
+ResetViewButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+ResetViewButton.Text = \"Trở lại View Người chơi\"
+ResetViewButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetViewButton.TextScaled = true
+ResetViewButton.Parent = Frame
+ResetViewButton.MouseButton1Click:Connect(function()
+    -- Kiểm tra nhân vật
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild(\"Humanoid\") then
+        warn(\"Player's character or Humanoid not found!\")
+        return
+    end
+    -- Đặt lại camera về chế độ mặc định (Classic)
+    Camera.CameraType = Enum.CameraType.Custom
+    Camera.CameraSubject = LocalPlayer.Character.Humanoid
+    print(\"Camera view reset to player!\")
+end)
+
+-- Lưu ý về Server Hop
+local NoteLabel = Instance.new(\"TextLabel\")
+NoteLabel.Size = UDim2.new(0.9, 0, 0, 20)
+NoteLabel.Position = UDim2.new(0.05, 0, 0, 340)
+NoteLabel.BackgroundTransparency = 1
+NoteLabel.Text = \"Chuyển server để tìm đủ nguyên liệu!\"
+NoteLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+NoteLabel.TextScaled = true
+NoteLabel.Parent = Frame
